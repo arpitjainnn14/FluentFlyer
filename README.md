@@ -41,7 +41,7 @@ A modern Flask web application that generates customized language cheat sheets f
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/arpitjainnn14/FluentFlyer.git
 cd fluentflyer
 ```
 
