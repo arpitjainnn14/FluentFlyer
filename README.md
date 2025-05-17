@@ -2,6 +2,8 @@
 
 A modern Flask web application that generates customized language cheat sheets for travelers. The application provides context-aware translations and pronunciations for various travel scenarios, helping users communicate effectively in their target language.
 
+![WeightWave](screenshot.png)
+
 ## Features
 
 - Generate customized language cheat sheets for different travel scenarios:
