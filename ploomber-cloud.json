@@ -1,0 +1,9 @@
+{
+  "timeout": 300,
+  "memory": "512Mi",
+  "cpu": "4",
+  "scaling": {
+    "minReplicas": 1,
+    "maxReplicas": 3
+  }
+}

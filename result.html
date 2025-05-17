@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card main-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0">
+                        <i class="fas fa-language text-primary me-2"></i>
+                        Your Language Cheat Sheet
+                    </h2>
+                    <div class="btn-group">
+                        <button onclick="generatePDF()" class="btn btn-outline-primary">
+                            <i class="fas fa-file-pdf me-2"></i>Export PDF
+                        </button>
+                        <button onclick="playAllPronunciations()" class="btn btn-outline-primary">
+                            <i class="fas fa-volume-up me-2"></i>Play All
+                        </button>
+                    </div>
+                </div>
+
+                {% if phrases %}
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="phrases-table">
+                            <thead>
+                                <tr>
+                                    <th>Native ({{ native_lang }})</th>
+                                    <th>Translation ({{ target_lang }})</th>
+                                    <th>Pronunciation Guide</th>
+                                    <th>Audio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for phrase in phrases %}
+                                    <tr>
+                                        <td>{{ phrase.native_phrase }}</td>
+                                        <td>{{ phrase.target_phrase }}</td>
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ phrase.pronunciation }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <button 
+                                                onclick="playPronunciation('{{ phrase.target_phrase }}', '{{ target_lang }}')"
+                                                class="btn btn-sm btn-outline-primary"
+                                                data-text="{{ phrase.target_phrase }}"
+                                                data-language="{{ target_lang }}">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="alert alert-info mt-4">
+                        <h5><i class="fas fa-info-circle me-2"></i>Tips for Using Your Cheat Sheet</h5>
+                        <ul class="mb-0">
+                            <li>Practice pronouncing the phrases using the audio guide</li>
+                            <li>Download the PDF version for offline use</li>
+                            <li>Focus on the most common phrases for your travel type</li>
+                            <li>Keep this cheat sheet handy during your trip</li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        No phrases were generated. Please try again with different settings.
+                    </div>
+                {% endif %}
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Generate Another Sheet
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function playPronunciation(text, language) {
+    try {
+        const response = await fetch('/generate_audio', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: text,
+                lang: language
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        const audioUrl = URL.createObjectURL(blob);
+        const audio = new Audio(audioUrl);
+        
+        // Clean up the URL object after playing
+        audio.onended = () => {
+            URL.revokeObjectURL(audioUrl);
+        };
+        
+        await audio.play();
+    } catch (error) {
+        console.error('Error playing audio:', error);
+        alert('Error playing audio. Please try again.');
+    }
+}
+
+async function playAllPronunciations() {
+    const buttons = document.querySelectorAll('button[onclick^="playPronunciation"]');
+    let delay = 0;
+    
+    for (const button of buttons) {
+        const text = button.getAttribute('data-text');
+        const language = button.getAttribute('data-language');
+        if (text && language) {
+            await new Promise(resolve => setTimeout(resolve, delay));
+            await playPronunciation(text, language);
+            delay = 2000; // 2 seconds between each phrase
+        }
+    }
+}
+
+function generatePDF() {
+    const phrases = Array.from(document.querySelectorAll('#phrases-table tbody tr')).map(row => {
+        const cells = row.querySelectorAll('td');
+        return {
+            native_phrase: cells[0].textContent.trim(),
+            target_phrase: cells[1].textContent.trim(),
+            pronunciation: cells[2].textContent.trim()
+        };
+    });
+
+    fetch('/generate_pdf', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            phrases: phrases,
+            native_lang: '{{ native_lang }}',
+            target_lang: '{{ target_lang }}'
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `travel_cheat_sheet_{{ native_lang }}_to_{{ target_lang }}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+    })
+    .catch(error => {
+        console.error('Error generating PDF:', error);
+        alert('Error generating PDF. Please try again.');
+    });
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card main-card">
+            <div class="card-body">
+                <h1 class="text-center mb-4">
+                    <i class="fas fa-language text-primary me-2"></i>
+                    FluentFlyer
+                </h1>
+                <p class="lead text-center mb-4">
+                    Generate professional language cheat sheets for your travel needs
+                </p>
+
+                <form method="POST" class="needs-validation" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row g-4">
+                        <!-- Native Language -->
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.native_language(class="form-select", id="native_language", **{'data-placeholder': 'Native'}) }}
+                                <label for="native_language">Native Language</label>
+                            </div>
+                        </div>
+
+                        <!-- Target Language -->
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.target_language(class="form-select", id="target_language", **{'data-placeholder': 'Destination'}) }}
+                                <label for="target_language">Target Language</label>
+                            </div>
+                        </div>
+
+                        <!-- Travel Type -->
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Travel Type</label>
+                            <div class="row g-3">
+                                {% for travel_type in form.travel_type %}
+                                <div class="col-md-6">
+                                    <div class="travel-type-card">
+                                        <div class="travel-type-main w-100">
+                                            <div class="form-check w-100">
+                                                <input type="radio"
+                                                    class="form-check-input"
+                                                    id="{{ travel_type.id }}"
+                                                    name="{{ travel_type.name }}"
+                                                    value="{{ travel_type.data }}"
+                                                    {% if travel_type.checked %}checked{% endif %}
+                                                >
+                                                <label class="form-check-label w-100" for="{{ travel_type.id }}">
+                                                    <div class="travel-type-header d-flex align-items-center mb-1">
+                                                        <span class="travel-type-icon-circle me-3">
+                                                            <i class="fas {{ {
+                                                                'business': 'fa-briefcase',
+                                                                'leisure': 'fa-umbrella-beach',
+                                                                'emergency': 'fa-heartbeat',
+                                                                'backpacking': 'fa-hiking',
+                                                                'romantic': 'fa-heart',
+                                                                'festival': 'fa-music',
+                                                                'study_abroad': 'fa-graduation-cap',
+                                                                'medical_travel': 'fa-hospital',
+                                                                'diplomacy': 'fa-landmark',
+                                                                'trade': 'fa-store'
+                                                            }[travel_type.data] }}"></i>
+                                                        </span>
+                                                        <span class="travel-type-label-text">{{ travel_type.label.text }}</span>
+                                                    </div>
+                                                    <div class="travel-type-desc">
+                                                        {{ {
+                                                            'business': 'Corporate meetings, conferences, and professional visits',
+                                                            'leisure': 'Vacations, sightseeing, and cultural experiences',
+                                                            'emergency': 'Medical emergencies and urgent situations',
+                                                            'backpacking': 'Budget travel, hostels, and adventure',
+                                                            'romantic': 'Dating, relationships, and romantic situations',
+                                                            'festival': 'Cultural events, celebrations, and traditional ceremonies',
+                                                            'study_abroad': 'Academic programs, research, and educational visits',
+                                                            'medical_travel': 'Medical tourism, treatments, and healthcare visits',
+                                                            'diplomacy': 'Official meetings, embassy work, and diplomatic visits',
+                                                            'trade': 'Business meetings, market visits, and commercial activities'
+                                                        }[travel_type.data] }}
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="col-12 text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-magic me-2"></i>Generate Cheat Sheet
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row mt-5 g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <i class="fas fa-language feature-icon"></i>
+                    <h3>Multiple Languages</h3>
+                    <p>Support for numerous language pairs with accurate translations</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <i class="fas fa-file-pdf feature-icon"></i>
+                    <h3>PDF Export</h3>
+                    <p>Download your cheat sheet as a professional PDF document</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <i class="fas fa-volume-up feature-icon"></i>
+                    <h3>Audio Guide</h3>
+                    <p>Listen to pronunciations of all phrases</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real Life Scenarios Link -->
+        <div class="row mt-4 mb-5">
+            <div class="col-12 text-center">
+                <a href="{{ url_for('real_life_scenarios') }}" class="btn btn-lg btn-success px-5 py-3" style="font-size:1.3rem; font-weight:600; border-radius:2rem; box-shadow:0 2px 8px rgba(44,62,80,0.08);">
+                    <span style="font-size:1.7rem; vertical-align:middle;">🌍</span>
+                    <span class="ms-2">Explore Real Life Scenarios</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

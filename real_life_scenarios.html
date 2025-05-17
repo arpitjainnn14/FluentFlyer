@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card main-card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">
+                        <span class="me-2">🌍</span> Real Life Scenarios
+                    </h2>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Home
+                    </a>
+                </div>
+                <p class="lead mb-4">Essential phrases for real-world travel situations, grouped by scenario. Select your languages to see translations!</p>
+
+                <!-- Language Selection Form -->
+                <form method="POST" class="row g-3 mb-4">
+                    {{ form.hidden_tag() }}
+                    <div class="col-md-5">
+                        <div class="form-floating">
+                            {{ form.native_language(class="form-select", id="native_language") }}
+                            <label for="native_language">Native Language</label>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-floating">
+                            {{ form.target_language(class="form-select", id="target_language") }}
+                            <label for="target_language">Destination Language</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-globe me-2"></i>Show
+                        </button>
+                    </div>
+                </form>
+
+                {% if scenarios %}
+                    {% for key, scenario in scenarios.items() %}
+                        <section class="scenario-section mb-5">
+                            <h4 class="scenario-title">
+                                <span class="scenario-icon">{{ scenario.icon }}</span> {{ scenario.title }}
+                            </h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col">{{ native_lang|capitalize }} Phrase</th>
+                                            <th scope="col">{{ target_lang|capitalize }} Translation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for phrase in scenario.phrases %}
+                                            <tr>
+                                                <td>{{ phrase.native }}</td>
+                                                <td>{{ phrase.translation }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
